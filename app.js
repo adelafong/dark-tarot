@@ -1,43 +1,471 @@
-const major=[
-['The Fool','愚人','新的开始、自由、信任、冒险','new beginnings, trust, freedom','新的旅程正在开启。保持开放与好奇，同时留意现实风险。','A new journey is opening. Stay curious while remaining aware of practical risks.'],
-['The Magician','魔术师','行动、创造、能力、显化','manifestation, skill, action','你已经拥有推动事情发展的资源与能力，关键在于主动使用它们。','You already have the tools to move this situation forward; the key is using them deliberately.'],
-['The High Priestess','女祭司','直觉、秘密、内在智慧','intuition, mystery, inner knowing','有些答案不在表面。相信直觉，并观察没有被说出口的信息。','Some answers are beneath the surface. Trust intuition and notice what is not being said.'],
-['The Empress','皇后','丰盛、照顾、创造力、成长','abundance, care, creativity','这是滋养、成长与创造的能量，适合让关系或计划自然发展。','This is nurturing, creative energy that supports natural growth.'],
-['The Emperor','皇帝','稳定、结构、权威、界限','structure, authority, stability','清晰的规则、边界和计划会让事情更稳定。','Clear structure, boundaries and planning bring stability.'],
-['The Hierophant','教皇','传统、学习、指导、价值观','tradition, learning, guidance','可以从经验、制度、老师或成熟的方法中得到帮助。','Guidance may come from experience, mentors, traditions or established methods.'],
-['The Lovers','恋人','爱情、选择、契合、价值一致','love, alignment, choices','这张牌强调真诚连接，也强调做出符合自己价值观的选择。','This card highlights connection and choices that align with your values.'],
-['The Chariot','战车','前进、决心、掌控、胜利','determination, direction, victory','保持目标明确并持续行动，事情有明显推进的可能。','Focused, disciplined action can move this forward.'],
-['Strength','力量','勇气、温柔、自信、内在力量','courage, compassion, inner power','真正的力量来自耐心、自我控制和温柔的坚定。','Real strength comes from patience, self-mastery and gentle confidence.'],
-['The Hermit','隐者','独处、反思、智慧、寻找答案','solitude, wisdom, introspection','先安静下来，你需要的答案更可能来自自己的思考。','Step back and listen inwardly; the answer may come through reflection.'],
-['Wheel of Fortune','命运之轮','转变、周期、机会、转折点','change, cycles, turning point','局势正在变化，旧周期结束后会出现新的可能。','The cycle is turning and new possibilities can emerge.'],
-['Justice','正义','公平、真相、责任、平衡','fairness, truth, accountability','结果会越来越依赖事实、责任和是否做出公平的选择。','Facts, accountability and fair choices matter strongly here.'],
-['The Hanged Man','倒吊人','暂停、放下、换角度、等待','pause, surrender, new perspective','暂停并不等于失败。换一个角度，你会看见之前忽略的东西。','A pause is not failure; a new perspective may reveal what you missed.'],
-['Death','死神','结束、转化、重生、新阶段','ending, transformation, rebirth','一个阶段正在结束，为真正的新开始腾出空间。','One chapter is ending to create space for a genuine new beginning.'],
-['Temperance','节制','平衡、疗愈、协调、节制','balance, healing, moderation','事情适合慢慢调和，不需要走极端。稳定会比速度更重要。','Balance and gradual adjustment matter more than speed.'],
-['The Devil','恶魔','束缚、欲望、依赖、阴影','attachment, desire, shadow','注意什么正在让你失去自由：恐惧、欲望、依赖或执念。','Notice what is limiting your freedom through fear, desire, attachment or obsession.'],
-['The Tower','高塔','突变、真相揭露、崩塌、突破','upheaval, revelation, breakthrough','旧结构如果不真实，就可能突然被打破，但也会带来更真实的开始。','An unstable structure may break, creating room for a more truthful beginning.'],
-['The Star','星星','希望、疗愈、灵感、恢复','hope, healing, inspiration','希望正在回来，适合恢复信心并重新相信未来。','Hope and healing are returning; allow yourself to trust the future again.'],
-['The Moon','月亮','直觉、不确定、梦境、迷雾','intuition, dreams, uncertainty','事情还没有完全明朗，先观察，不要急着下结论。','Not everything is clear yet. Observe carefully and avoid rushing to conclusions.'],
-['The Sun','太阳','快乐、成功、清晰、活力','joy, success, vitality','这是很明亮的能量，代表事情更容易被看见、确认并向好的方向发展。','This is bright, visible energy that supports clarity and positive development.'],
-['Judgement','审判','觉醒、反思、召唤、重新开始','awakening, reflection, calling','过去的经验正在帮助你做出更成熟的新决定。','Past experience is helping you make a more mature new decision.'],
-['The World','世界','完成、圆满、整合、阶段成果','completion, fulfillment, integration','一个重要周期接近完成，你正在进入更完整的新阶段。','An important cycle is completing and a more integrated stage is beginning.']];
-const ranks=[['Ace','一'],['Two','二'],['Three','三'],['Four','四'],['Five','五'],['Six','六'],['Seven','七'],['Eight','八'],['Nine','九'],['Ten','十'],['Page','侍从'],['Knight','骑士'],['Queen','皇后'],['King','国王']];
-const suits={Wands:['权杖','行动、热情、动力','action, passion, momentum','这张牌强调行动力、勇气与事情推进的速度。','This card emphasizes action, courage and momentum.'],Cups:['圣杯','感情、情绪、关系','emotion, intuition, connection','这张牌强调情绪交流、关系连接与内在感受。','This card emphasizes feelings, relationships and emotional connection.'],Swords:['宝剑','思考、沟通、真相','thought, truth, decision','这张牌强调思考、沟通、决定，以及必须面对的事实。','This card emphasizes thought, communication, decisions and truth.'],Pentacles:['星币','现实、工作、稳定','resources, work, stability','这张牌强调现实基础、工作、金钱、安全感与长期发展。','This card emphasizes practical foundations, work, money, security and long-term growth.']};
-const rankMeaning={Ace:['新的机会与起点正在出现。','A new opportunity or beginning is emerging.'],Two:['你正在两个方向、选择或责任之间寻找平衡。','You are balancing two directions, choices or responsibilities.'],Three:['事情开始发展，需要合作、耐心或进一步扩展。','The situation is developing through collaboration, patience or expansion.'],Four:['当前更需要稳定、休息或巩固基础。','Stability, rest or consolidation is important now.'],Five:['这是挑战、冲突或失落的阶段，需要正视压力。','This is a phase of challenge, conflict or loss that needs to be faced.'],Six:['事情正在从困难走向改善，支持与推进逐渐出现。','The situation is moving from difficulty toward improvement and support.'],Seven:['需要评估、坚持，同时分辨哪些选择真正值得投入。','Assess carefully, stay steady and choose what is truly worth your energy.'],Eight:['行动、练习和持续投入会带来明显进展。','Practice and consistent effort can create visible progress.'],Nine:['你已经走了很远，现在需要保护成果并相信自己的能力。','You have come far; protect your progress and trust your ability.'],Ten:['一个周期达到高点或终点，结果正在形成。','A cycle is reaching its peak or conclusion and a result is forming.'],Page:['新的消息、学习机会或好奇心正在开启。','A new message, learning opportunity or curiosity is opening.'],Knight:['事情进入行动阶段，需要勇气、速度或稳定执行。','The situation is moving into action and needs courage or steady execution.'],Queen:['成熟的感受、判断或照顾能力会成为你的优势。','Mature judgment, emotional awareness or care is a strength here.'],King:['你有能力以成熟、稳定和负责的方式处理局势。','You can handle this situation with maturity, stability and responsibility.']};
-let cards=major.map(m=>({title_en:m[0],title_zh:m[1],suit:'Major',arcana:'Major Arcana',ku_zh:m[2],ku_en:m[3],mu_zh:m[4],mu_en:m[5]}));
-for(const [suit,s] of Object.entries(suits))for(const [rank,rz] of ranks){const rm=rankMeaning[rank];cards.push({title_en:`${rank} of ${suit}`,title_zh:`${s[0]}${rz}`,suit,arcana:'Minor Arcana',ku_zh:`${s[1]}；${rm[0].replace('。','')}`,ku_en:`${s[2]}; ${rm[1].replace('.','')}`,mu_zh:`${rm[0]}${s[3]}`,mu_en:`${rm[1]} ${s[4]}`})}
-const COLS=10;let LANG='both';
-function art(i,rev=false){const c=i%COLS,r=Math.floor(i/COLS);return `<div class="art ${rev?'rev':''}"><div class="sprite" style="left:-${c*100}%;top:-${r*100}%"></div></div>`}
-function textPair(zh,en){if(LANG==='zh')return `<p>${zh}</p>`;if(LANG==='en')return `<p class="en">${en}</p>`;return `<p>${zh}</p><p class="en">${en}</p>`}
-function getDeck(){let d=[...cards];const m=document.getElementById('deck').value;if(m==='major')d=d.filter(x=>x.arcana==='Major Arcana');if(m==='minor')d=d.filter(x=>x.arcana==='Minor Arcana');return d}
-function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-const positions={1:[['现在','Current Energy']],3:[['过去','Past'],['现在','Present'],['未来','Future']],5:[['现状','Situation'],['挑战','Challenge'],['隐藏影响','Hidden Influence'],['建议','Advice'],['发展结果','Likely Outcome']]};
-const focusZh={general:'综合来看，这组牌反映你目前最重要的能量与趋势。',love:'放在感情里看，这组牌主要反映双方互动、情绪回应与关系发展。',career:'放在事业里看，这组牌主要反映机会、压力、行动与结果。',study:'放在学业里看，这组牌主要反映专注度、学习状态、压力与表现。',money:'放在金钱和现实层面看，这组牌主要反映稳定、安全感、资源与回报。',self:'放在自我成长里看，这组牌主要反映情绪、信念与当前的人生课题。'};
-const focusEn={general:'Overall, this spread highlights the most important energies and trends around your situation.',love:'In love, this spread focuses on emotional exchange, connection and relationship development.',career:'In career, this spread focuses on opportunity, pressure, action and direction.',study:'In study, this spread focuses on concentration, learning state, pressure and performance.',money:'In money matters, this spread focuses on stability, resources, security and practical returns.',self:'For self-growth, this spread focuses on emotions, beliefs and the lesson you are currently learning.'};
-function orientation(c,rev){if(!rev)return{zhk:c.ku_zh,enk:c.ku_en,zhm:c.mu_zh,en:c.mu_en,ozh:'正位',oen:'Upright'};return{zhk:'阻滞、失衡、需要重新调整；'+c.ku_zh,enk:'blocked, imbalanced, needs adjustment; '+c.ku_en,zhm:'逆位表示这股能量可能被压抑、过度使用或暂时无法顺利表达。'+c.mu_zh,en:'Reversed, this energy may be blocked, overused or difficult to express clearly. '+c.mu_en,ozh:'逆位',oen:'Reversed'}}
-function cardBlock(c,rev,pos){const o=orientation(c,rev);return `<article class="draw">${LANG==='en'?`<div class="pos">${pos[1]}</div>`:LANG==='zh'?`<div class="pos">${pos[0]}</div>`:`<div class="pos">${pos[0]} · ${pos[1]}</div>`}${art(cards.indexOf(c),rev)}<div class="name">${c.title_en}</div><div class="zh">${c.title_zh}</div><div class="ori">${o.ozh} · ${o.oen}</div><div class="kw">${LANG==='en'?o.enk:LANG==='zh'?o.zhk:o.zhk+' / '+o.enk}</div></article>`}
-function draw(){const n=+document.getElementById('count').value,revOn=document.getElementById('reverse').checked,clar=document.getElementById('clarify').checked;const d=shuffle(getDeck()).slice(0,n+(clar?1:0)).map(c=>({c,rev:revOn&&Math.random()<.5}));let ps=[...positions[n]];if(clar)ps.push(['补充牌','Clarifier']);document.getElementById('spread').innerHTML=d.map((x,i)=>cardBlock(x.c,x.rev,ps[i])).join('');const q=document.getElementById('question').value.trim(),ctx=document.getElementById('context').value.trim(),focus=document.getElementById('focus').value;document.getElementById('meta').textContent=q||'本次牌阵 Reading';let blocks=`<div class="read"><h3>整体讯息 · Overall</h3>${textPair(focusZh[focus]+(q?' 你问的是：'+q+'。':'')+(ctx?' 背景：'+ctx+'。':''),focusEn[focus]+(q?' Question: '+q+'.':'')+(ctx?' Context: '+ctx+'.':''))}</div>`;d.forEach((x,i)=>{const o=orientation(x.c,x.rev);blocks+=`<div class="read"><h3>${ps[i][0]} · ${ps[i][1]} — ${x.c.title_en} · ${x.c.title_zh}</h3>${textPair(o.zhm,o.en)}<div class="kw">${LANG==='en'?o.enk:LANG==='zh'?o.zhk:o.zhk+' / '+o.enk}</div></div>`});blocks+=`<div class="read"><h3>总结 · Summary</h3>${textPair('把这些牌放在一起看，重点不是把结果当成绝对预言，而是看清现在的模式、阻碍和下一步最值得注意的方向。','Taken together, use these cards to reflect on present patterns, obstacles and the next direction worth noticing rather than as a fixed prediction.')}</div>`;document.getElementById('result').innerHTML=blocks}
-function renderGallery(){const q=document.getElementById('search').value.toLowerCase(),f=document.getElementById('filter').value;document.getElementById('grid').innerHTML=cards.map((c,i)=>({c,i})).filter(x=>(f==='all'||x.c.suit===f||(f==='Major'&&x.c.arcana==='Major Arcana'))&&(`${x.c.title_en} ${x.c.title_zh}`.toLowerCase().includes(q))).map(x=>`<article class="gcard" onclick="downloadCard(${x.i})">${art(x.i)}<div class="name">${x.c.title_en}</div><div class="zh">${x.c.title_zh}</div></article>`).join('')}
-function downloadCard(i){const img=new Image();img.onload=()=>{const sx=(i%COLS)*96,sy=Math.floor(i/COLS)*144,cv=document.createElement('canvas');cv.width=384;cv.height=576;cv.getContext('2d').drawImage(img,sx,sy,96,144,0,0,384,576);const a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download=cards[i].title_en.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'.png';a.click()};img.src='tarot_sprite.webp'}
-function daily(){const s=new Date().toISOString().slice(0,10);let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;const i=h%cards.length,c=cards[i],rev=((h>>2)&1)===1,o=orientation(c,rev);document.getElementById('dailyBox').innerHTML=`<div class="daily"><div>${art(i,rev)}</div><div><h2 style="margin-top:0">${c.title_en} · ${c.title_zh}</h2><div class="ori">${o.ozh} · ${o.oen}</div>${textPair(o.zhm,o.en)}<div class="kw">${LANG==='en'?o.enk:LANG==='zh'?o.zhk:o.zhk+' / '+o.enk}</div></div></div>`}
-document.getElementById('draw').onclick=draw;document.getElementById('search').oninput=renderGallery;document.getElementById('filter').onchange=renderGallery;document.getElementById('dailyBtn').onclick=daily;document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));['read','gallery','daily'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==b.dataset.tab));if(b.dataset.tab==='daily')daily()});document.querySelectorAll('.lang').forEach(b=>b.onclick=()=>{LANG=b.dataset.lang;document.querySelectorAll('.lang').forEach(x=>x.classList.toggle('active',x===b));if(document.getElementById('result').innerHTML)draw();renderGallery();daily()});renderGallery();daily();
+
+const state = {
+  lang: 'both',
+  step: 0,
+  form: {topic:'general', question:'', timeframe:'', person:'', context:'', spread:3, deck:'full', reversals:true},
+  preparedDeck: [],
+  drawIndex: 0,
+  drawn: [],
+  shuffling: false,
+  cards: []
+};
+
+const ui = {
+  zh: {
+    stepNames: ['主题', '问题', '背景', '牌阵', '洗牌', '抽牌', '结果'],
+    ritual: [
+      '先静下来，专注在你真正想问的问题上。',
+      '把问题说得越清楚，牌给出的方向会越贴近你。',
+      '想想时间范围、相关的人，以及你最想知道什么。',
+      '现在选择最适合你的牌阵与阅读方式。',
+      '闭上眼睛几秒，把问题放进牌里，然后开始洗牌。',
+      '请按照直觉一张一张翻牌，像真正抽牌一样慢慢来。',
+      '结果出来后，先读整体，再看每张牌的讯息。'
+    ],
+    topics: {
+      general:['综合','整体方向、当下能量与趋势'],
+      love:['感情','关系、喜欢的人、复合、互动发展'],
+      career:['事业','工作机会、前途、行动与结果'],
+      study:['学业','学习状态、考试、作品与压力'],
+      money:['金钱','收入、稳定度、资源与现实问题'],
+      self:['自我成长','疗愈、内心课题、信念与状态']
+    },
+    spreadInfo: {
+      1:['单张牌','快速看当下核心讯息'],
+      3:['三张牌','过去 / 现在 / 未来'],
+      5:['五张牌','现状 / 挑战 / 隐藏影响 / 建议 / 发展结果']
+    },
+    positions: {
+      1:['现在'],
+      3:['过去','现在','未来'],
+      5:['现状','挑战','隐藏影响','建议','发展结果']
+    },
+    focusIntro: {
+      general:'这组牌主要反映你目前整体的能量与趋势。',
+      love:'这组牌放在感情里看，重点是情绪回应、关系互动与发展方向。',
+      career:'这组牌放在事业里看，重点是机会、压力、行动与结果。',
+      study:'这组牌放在学业里看，重点是专注、表现、压力与调整。',
+      money:'这组牌放在现实与金钱里看，重点是稳定、安全感、投入与回报。',
+      self:'这组牌放在内在成长里看，重点是情绪、信念与目前的人生课题。'
+    }
+  },
+  en: {
+    stepNames: ['Topic', 'Question', 'Context', 'Spread', 'Shuffle', 'Draw', 'Result'],
+    ritual: [
+      'Slow down and focus on the question you truly want to ask.',
+      'The clearer the question, the more precise the reading will feel.',
+      'Think about timeframe, people involved, and what you most want to understand.',
+      'Now choose the spread and reading style that fits your situation.',
+      'Close your eyes for a few seconds, place your question into the deck, then shuffle.',
+      'Turn the cards one by one and let the reveal happen slowly, like a real reading.',
+      'Read the overall message first, then move into each individual card.'
+    ],
+    topics: {
+      general:['General','overall direction, present energy and trend'],
+      love:['Love','relationships, crush, reconciliation, connection'],
+      career:['Career','work, opportunity, direction and results'],
+      study:['Study','learning state, exams, projects and pressure'],
+      money:['Money','income, stability, resources and practical concerns'],
+      self:['Self growth','healing, inner lessons, beliefs and emotional state']
+    },
+    spreadInfo: {
+      1:['One card','a quick look at the core energy right now'],
+      3:['Three cards','past / present / future'],
+      5:['Five cards','situation / challenge / hidden influence / advice / likely outcome']
+    },
+    positions: {
+      1:['Current energy'],
+      3:['Past','Present','Future'],
+      5:['Situation','Challenge','Hidden influence','Advice','Likely outcome']
+    },
+    focusIntro: {
+      general:'This spread reflects the main energy and trend around your situation.',
+      love:'In love, this spread focuses on feelings, interaction and direction of the connection.',
+      career:'In career, this spread focuses on opportunity, pressure, action and results.',
+      study:'In study, this spread focuses on concentration, performance, pressure and adjustment.',
+      money:'In money matters, this spread focuses on stability, resources, effort and return.',
+      self:'In self-growth, this spread focuses on emotions, beliefs and current life lessons.'
+    }
+  }
+};
+
+function text(zh, en){
+  if(state.lang === 'zh') return zh;
+  if(state.lang === 'en') return en;
+  return `${zh}<br><span class="en">${en}</span>`;
+}
+
+function currentUI(){
+  return state.lang === 'en' ? ui.en : ui.zh;
+}
+
+function escapeHtml(str=''){
+  return String(str).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function filteredDeck(){
+  let deck = [...state.cards];
+  if(state.form.deck === 'major') deck = deck.filter(c => c.arcana === 'Major Arcana');
+  if(state.form.deck === 'minor') deck = deck.filter(c => c.arcana === 'Minor Arcana');
+  return deck;
+}
+
+function prepareDeck(){
+  const deck = shuffle(filteredDeck());
+  state.preparedDeck = deck;
+  state.drawIndex = 0;
+  state.drawn = [];
+}
+
+function spriteArt(index, reversed=false, mini=false){
+  const col = index % 10;
+  const row = Math.floor(index / 10);
+  return `<div class="art ${reversed?'reversed':''}">
+    <div class="sprite" style="left:-${col*100}%;top:-${row*100}%;${reversed?'transform:rotate(180deg);transform-origin:center center;':''}"></div>
+  </div>`;
+}
+
+function cardResultBlock(item, posZh, posEn){
+  const c = item.card;
+  const idx = state.cards.findIndex(x => x.id === c.id);
+  const reversed = item.reversed;
+  const orientation = reversed ? text('逆位','Reversed') : text('正位','Upright');
+  const keywords = reversed ? c.keywords_reversed : c.keywords_upright;
+  const meaning = reversed ? c.meaning_reversed : c.meaning_upright;
+  const zhExplain = buildChineseMeaning(c, reversed, posZh);
+  return `<article class="result-card">
+    <div>
+      <div class="card-frame revealed"><div class="flip"><div class="face back"></div><div class="face front">${spriteArt(idx, reversed)}</div></div></div>
+    </div>
+    <div>
+      <div class="badge">${state.lang === 'en' ? posEn : state.lang === 'zh' ? posZh : `${posZh} · ${posEn}`}</div>
+      <h3>${escapeHtml(c.title_en)}</h3>
+      <div class="cn-name">${escapeHtml(c.title_zh)} · ${orientation}</div>
+      <div class="text-block"><strong>${text('关键词','Keywords')}</strong><br>${escapeHtml(keywords)}</div>
+      <div class="text-block" style="margin-top:10px"><strong>${text('牌义','Meaning')}</strong><br>${state.lang==='en' ? escapeHtml(meaning) : state.lang==='zh' ? escapeHtml(zhExplain) : `${escapeHtml(zhExplain)}<br><span class="en">${escapeHtml(meaning)}</span>`}</div>
+    </div>
+  </article>`;
+}
+
+function buildChineseMeaning(card, reversed, positionZh){
+  const title = card.title_zh;
+  const base = reversed ? card.meaning_reversed : card.meaning_upright;
+  let posText = '';
+  if(positionZh === '过去') posText = '这张牌说明过去的影响仍然在作用。';
+  else if(positionZh === '现在') posText = '这张牌反映你现在最直接面对的能量。';
+  else if(positionZh === '未来') posText = '这张牌代表照目前趋势发展，接下来可能出现的方向。';
+  else if(positionZh === '现状') posText = '这张牌指出事情目前的核心状态。';
+  else if(positionZh === '挑战') posText = '这张牌指出阻力、压力或目前最卡住的地方。';
+  else if(positionZh === '隐藏影响') posText = '这张牌指出表面不明显、但正在影响结果的因素。';
+  else if(positionZh === '建议') posText = '这张牌给你现在最值得参考的态度与做法。';
+  else if(positionZh === '发展结果') posText = '这张牌代表照目前能量继续发展时，最可能靠近的结果。';
+  const mode = reversed ? '逆位' : '正位';
+  return `${posText}${title}${mode}的重点是「${(reversed?card.keywords_reversed:card.keywords_upright)}」。${simpleTranslateBase(base)}`;
+}
+
+function simpleTranslateBase(en){
+  const map = [
+    ['A leap into the unknown opens a new chapter.','代表一个新的篇章正在展开。'],
+    ['Move carefully; impulsive choices or fear of beginning may block the path.','提醒你不要冲动，也不要因为害怕开始而停住。'],
+    ['Not everything is visible yet; move with intuition.','现在事情还没有完全明朗，先跟随直觉慢慢看。'],
+    ['Warmth, visibility, and confidence support the outcome.','这张牌带来明亮、肯定与更清晰的发展。'],
+    ['An old chapter is closing so a new one can emerge.','旧阶段正在结束，为新阶段让出空间。'],
+    ['A clear truth or decisive idea cuts through the fog.','有一个清楚的想法或真相正在浮现。'],
+    ['Emotional wholeness and belonging are strongly present.','它强调情感上的满足、归属感与和谐。'],
+    ['A practical new beginning is taking root.','一个现实层面的新开始正在慢慢落地。']
+  ];
+  const found = map.find(([k]) => en === k);
+  return found ? found[1] : '它提醒你把这张牌的关键词放回你现在的情境里理解，答案会更贴近你。';
+}
+
+function buildSummary(){
+  const zhPositions = ui.zh.positions[state.form.spread];
+  const enPositions = ui.en.positions[state.form.spread];
+  const results = state.drawn.map((item, i) => cardResultBlock(item, zhPositions[i], enPositions[i])).join('');
+  const majors = state.drawn.filter(x => x.card.arcana === 'Major Arcana').length;
+  const reversedCount = state.drawn.filter(x => x.reversed).length;
+  const suitCount = state.drawn.reduce((acc, x) => {
+    acc[x.card.suit] = (acc[x.card.suit]||0)+1;
+    return acc;
+  }, {});
+  let zhSummary = `${ui.zh.focusIntro[state.form.topic]} `;
+  let enSummary = `${ui.en.focusIntro[state.form.topic]} `;
+  zhSummary += `这次牌阵里，大阿尔卡那有 ${majors} 张，逆位有 ${reversedCount} 张。`;
+  enSummary += `This spread contains ${majors} Major Arcana card(s) and ${reversedCount} reversed card(s).`;
+  if(suitCount.Cups){ zhSummary += ' 圣杯偏多，表示情绪与关系议题较突出。'; enSummary += ' Cups are prominent, highlighting emotional and relational themes.'; }
+  if(suitCount.Wands){ zhSummary += ' 权杖偏多，表示行动力、热度与推进感很重要。'; enSummary += ' Wands are prominent, highlighting momentum, passion and action.'; }
+  if(suitCount.Swords){ zhSummary += ' 宝剑偏多，表示沟通、压力或真相是关键。'; enSummary += ' Swords are prominent, pointing to communication, pressure or truth.'; }
+  if(suitCount.Pentacles){ zhSummary += ' 星币偏多，表示现实、稳定与资源问题值得关注。'; enSummary += ' Pentacles are prominent, pointing to stability, resources and practical matters.'; }
+  return `
+    <div class="step-header">
+      <div class="eyebrow">REVEAL</div>
+      <h2>${text('你的占卜结果','Your reading result')}</h2>
+      <p>${text('先看整体讯息，再慢慢读每一张牌。','Read the overall message first, then move through each card slowly.')}</p>
+    </div>
+    <div class="summary-box text-block">${state.lang==='en' ? escapeHtml(enSummary) : state.lang==='zh' ? escapeHtml(zhSummary) : `${escapeHtml(zhSummary)}<br><span class="en">${escapeHtml(enSummary)}</span>`}</div>
+    <div class="result-grid">${results}</div>
+    <div class="action-row"><button class="primary" onclick="restartReading()">${text('再抽一次','Start another reading')}</button></div>
+  `;
+}
+
+function updateProgress(){
+  const list = document.getElementById('progressList');
+  list.innerHTML = currentUI().stepNames.map((name, i) => `
+    <div class="progress-item ${i < state.step ? 'done' : i === state.step ? 'current' : ''}">
+      <div class="progress-dot"></div>
+      <div class="progress-text">${escapeHtml(name)}</div>
+    </div>
+  `).join('');
+  document.getElementById('ritualText').innerHTML = state.lang === 'en' ? ui.en.ritual[state.step] : state.lang === 'zh' ? ui.zh.ritual[state.step] : `${ui.zh.ritual[state.step]}<br><span class="en">${ui.en.ritual[state.step]}</span>`;
+}
+
+function gotoStep(step){
+  state.step = step;
+  updateProgress();
+  renderWizard();
+}
+
+function nextStep(){ gotoStep(Math.min(6, state.step + 1)); }
+function prevStep(){ gotoStep(Math.max(0, state.step - 1)); }
+
+function topicChoices(){
+  return Object.entries(currentUI().topics).map(([key, val]) => `
+    <button class="choice ${state.form.topic===key?'selected':''}" onclick="setTopic('${key}')">
+      <div class="c-title">${state.lang==='en' ? ui.en.topics[key][0] : ui.zh.topics[key][0]}</div>
+      <div class="c-desc">${state.lang==='en' ? ui.en.topics[key][1] : ui.zh.topics[key][1]}</div>
+    </button>
+  `).join('');
+}
+
+function setTopic(key){ state.form.topic = key; renderWizard(); }
+function setSpread(n){ state.form.spread = n; renderWizard(); }
+function setDeck(v){ state.form.deck = v; renderWizard(); }
+
+function renderWizard(){
+  const root = document.getElementById('wizard');
+  const step = state.step;
+  if(step === 0){
+    root.innerHTML = `
+      <div class="step active">
+        <div class="step-header"><div class="eyebrow">STEP 1</div><h2>${text('你想问哪一种主题？','What is your reading about?')}</h2><p>${text('先决定主轴，让整个占卜更聚焦。','Choose a main focus so the reading feels more centered and intentional.')}</p></div>
+        <div class="choice-grid">${topicChoices()}</div>
+        <div class="action-row"><button class="primary" onclick="nextStep()">${text('继续','Continue')}</button></div>
+      </div>`;
+  }
+  if(step === 1){
+    root.innerHTML = `
+      <div class="step active">
+        <div class="step-header"><div class="eyebrow">STEP 2</div><h2>${text('把问题说清楚一点','State your question clearly')}</h2><p>${text('像真的面对塔罗师一样，把最想知道的事写出来。','Write your main question as if you were sitting in front of a tarot reader.')}</p></div>
+        <div class="field"><label>${text('你的问题','Your question')}</label><textarea id="questionField" placeholder="${state.lang==='en'?'For example: What will happen between me and this person in the next three months?':'例如：我和这个人接下来三个月会怎么发展？'}">${escapeHtml(state.form.question)}</textarea></div>
+        <div class="action-row"><button class="ghost" onclick="prevStep()">${text('返回','Back')}</button><button class="primary" onclick="saveQuestion()">${text('继续','Continue')}</button></div>
+      </div>`;
+  }
+  if(step === 2){
+    root.innerHTML = `
+      <div class="step active">
+        <div class="step-header"><div class="eyebrow">STEP 3</div><h2>${text('再补充一点背景','Add a little more context')}</h2><p>${text('不是必须，但加入时间范围、对象、背景后，结果会更贴近你。','Not required, but timeframe, person and context help the reading feel more specific.')}</p></div>
+        <div class="inline">
+          <div class="field"><label>${text('时间范围','Timeframe')}</label><input id="timeField" type="text" value="${escapeHtml(state.form.timeframe)}" placeholder="${state.lang==='en'?'Next month / next 3 months / this week':'例如：这周 / 接下来三个月'}"></div>
+          <div class="field"><label>${text('相关对象','Person involved')}</label><input id="personField" type="text" value="${escapeHtml(state.form.person)}" placeholder="${state.lang==='en'?'ex-partner / crush / manager':'例如：喜欢的人 / 前任 / 上司'}"></div>
+        </div>
+        <div class="field"><label>${text('补充背景','Context')}</label><textarea id="contextField" placeholder="${state.lang==='en'?'For example: We are in no contact now, but I still want to know if reconciliation is possible.':'例如：我们现在没有联系，但我想知道还有没有复合可能。'}">${escapeHtml(state.form.context)}</textarea></div>
+        <div class="action-row"><button class="ghost" onclick="prevStep()">${text('返回','Back')}</button><button class="primary" onclick="saveContext()">${text('继续','Continue')}</button></div>
+      </div>`;
+  }
+  if(step === 3){
+    root.innerHTML = `
+      <div class="step active">
+        <div class="step-header"><div class="eyebrow">STEP 4</div><h2>${text('选择牌阵与阅读方式','Choose your spread and reading style')}</h2><p>${text('你可以选单张、三张或五张，也可以决定是否使用逆位。','Choose one-card, three-card or five-card spread, and decide whether to use reversals.')}</p></div>
+        <div class="card">
+          <div class="choice-grid">
+            ${[1,3,5].map(n => `<button class="choice ${state.form.spread===n?'selected':''}" onclick="setSpread(${n})"><div class="c-title">${state.lang==='en'?ui.en.spreadInfo[n][0]:ui.zh.spreadInfo[n][0]}</div><div class="c-desc">${state.lang==='en'?ui.en.spreadInfo[n][1]:ui.zh.spreadInfo[n][1]}</div></button>`).join('')}
+          </div>
+          <div class="inline" style="margin-top:16px">
+            <div class="field"><label>${text('使用牌组','Deck')}</label>
+              <select id="deckField">
+                <option value="full" ${state.form.deck==='full'?'selected':''}>${state.lang==='en'?'Full deck · 78 cards':'完整牌组 · 78 张'}</option>
+                <option value="major" ${state.form.deck==='major'?'selected':''}>${state.lang==='en'?'Major Arcana only':'仅大阿尔卡那'}</option>
+                <option value="minor" ${state.form.deck==='minor'?'selected':''}>${state.lang==='en'?'Minor Arcana only':'仅小阿尔卡那'}</option>
+              </select>
+            </div>
+            <div class="checks">
+              <label class="check"><input id="reverseField" type="checkbox" ${state.form.reversals?'checked':''}> ${text('启用逆位','Use reversed cards')}</label>
+            </div>
+          </div>
+        </div>
+        <div class="action-row"><button class="ghost" onclick="prevStep()">${text('返回','Back')}</button><button class="primary" onclick="saveSpread()">${text('继续洗牌','Continue to shuffle')}</button></div>
+      </div>`;
+  }
+  if(step === 4){
+    root.innerHTML = `
+      <div class="step active">
+        <div class="step-header"><div class="eyebrow">STEP 5</div><h2>${text('洗牌前，先把问题放进牌里','Before shuffling, place your question into the deck')}</h2><p>${text('可以先闭上眼睛几秒。准备好后，再按下开始洗牌。','Close your eyes for a few seconds if you want. When ready, press shuffle.')}</p></div>
+        <div class="center-stage">
+          <div>
+            <div class="shuffle-wrap">
+              <div id="deckStack" class="deck-stack ${state.shuffling?'shuffling':''}">
+                <div class="back-card"></div>
+                <div class="back-card"></div>
+                <div class="back-card"></div>
+                <div class="back-card"></div>
+              </div>
+            </div>
+            <p class="soft-text">${state.lang==='en' ? escapeHtml(state.form.question || 'Focus on your question.') : escapeHtml(state.form.question || '在心里专注你的问题。')}</p>
+            <div class="action-row" style="justify-content:center">
+              <button class="ghost" onclick="prevStep()">${text('返回','Back')}</button>
+              <button class="primary" ${state.shuffling?'disabled':''} onclick="startShuffle()">${text(state.shuffling?'正在洗牌...':'开始洗牌', state.shuffling?'Shuffling...':'Start shuffle')}</button>
+              <button class="secondary ${state.preparedDeck.length?'':'hidden'}" onclick="gotoStep(5)">${text('开始抽牌','Begin drawing')}</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+  if(step === 5){
+    const positionsZh = ui.zh.positions[state.form.spread];
+    const positionsEn = ui.en.positions[state.form.spread];
+    root.innerHTML = `
+      <div class="step active">
+        <div class="step-header"><div class="eyebrow">STEP 6</div><h2>${text('一张一张翻开你的牌','Reveal your cards one by one')}</h2><p>${text('按顺序点击每个位置，慢慢抽，像真实塔罗占卜一样。','Click each position in order and reveal the cards slowly, like a real tarot reading.')}</p></div>
+        <div class="draw-grid">
+          ${positionsZh.map((posZh, i) => {
+            const posEn = positionsEn[i];
+            const drawn = state.drawn[i];
+            return `<div class="draw-slot ${drawn?'done':''}">
+              <div class="slot-label">${state.lang==='en'?posEn:state.lang==='zh'?posZh:`${posZh} · ${posEn}`}</div>
+              <div class="card-frame ${drawn?'revealed':''}" onclick="revealCard(${i})">
+                <div class="flip">
+                  <div class="face back"></div>
+                  <div class="face front">${drawn ? spriteArt(state.cards.findIndex(x => x.id===drawn.card.id), drawn.reversed) : ''}</div>
+                </div>
+              </div>
+              <div class="slot-help">${drawn ? `${escapeHtml(drawn.card.title_en)}<br><span class="en">${escapeHtml(drawn.card.title_zh)} · ${drawn.reversed ? (state.lang==='en'?'Reversed':'逆位') : (state.lang==='en'?'Upright':'正位')}</span>` : text('点击翻牌','Tap to reveal')}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="action-row"><button class="ghost" onclick="gotoStep(4)">${text('返回洗牌','Back to shuffle')}</button>${state.drawn.length === state.form.spread ? `<button class="primary" onclick="gotoStep(6)">${text('查看结果','See result')}</button>` : ''}</div>
+      </div>`;
+  }
+  if(step === 6){
+    root.innerHTML = `<div class="step active">${buildSummary()}</div>`;
+  }
+}
+
+function saveQuestion(){
+  state.form.question = document.getElementById('questionField').value.trim();
+  nextStep();
+}
+function saveContext(){
+  state.form.timeframe = document.getElementById('timeField').value.trim();
+  state.form.person = document.getElementById('personField').value.trim();
+  state.form.context = document.getElementById('contextField').value.trim();
+  nextStep();
+}
+function saveSpread(){
+  state.form.deck = document.getElementById('deckField').value;
+  state.form.reversals = document.getElementById('reverseField').checked;
+  nextStep();
+}
+
+function startShuffle(){
+  state.shuffling = true;
+  renderWizard();
+  setTimeout(() => {
+    prepareDeck();
+    state.shuffling = false;
+    renderWizard();
+  }, 2600);
+}
+
+function revealCard(slotIndex){
+  if(state.step !== 5) return;
+  if(slotIndex !== state.drawn.length) return;
+  const card = state.preparedDeck[state.drawIndex];
+  if(!card) return;
+  const reversed = state.form.reversals ? Math.random() < 0.5 : false;
+  state.drawn.push({card, reversed});
+  state.drawIndex += 1;
+  renderWizard();
+}
+
+function restartReading(){
+  state.step = 0;
+  state.form = {topic:'general', question:'', timeframe:'', person:'', context:'', spread:3, deck:'full', reversals:true};
+  state.preparedDeck = [];
+  state.drawIndex = 0;
+  state.drawn = [];
+  state.shuffling = false;
+  updateProgress();
+  renderWizard();
+}
+
+function downloadCard(card){
+  const idx = state.cards.findIndex(x => x.id === card.id);
+  const col = idx % 10;
+  const row = Math.floor(idx / 10);
+  const img = new Image();
+  img.onload = () => {
+    const cw = img.width / 10;
+    const ch = img.height / 8;
+    const canvas = document.createElement('canvas');
+    canvas.width = cw;
+    canvas.height = ch;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, col*cw, row*ch, cw, ch, 0, 0, cw, ch);
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = `${card.title_en.toLowerCase().replace(/[^a-z0-9]+/g,'_')}.png`;
+    a.click();
+  };
+  img.src = 'tarot_sprite.webp';
+}
+
+function renderGallery(){
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  const suit = document.getElementById('suitFilter').value;
+  const items = state.cards.filter(card => {
+    const hit = `${card.title_en} ${card.title_zh} ${card.suit}`.toLowerCase().includes(q);
+    const okSuit = suit === 'all' || card.suit === suit || (suit === 'Major' && card.arcana === 'Major Arcana');
+    return hit && okSuit;
+  });
+  document.getElementById('galleryGrid').innerHTML = items.length ? items.map(card => {
+    const idx = state.cards.findIndex(x => x.id === card.id);
+    return `<div class="g-card" onclick="downloadCardById('${card.id}')">
+      <div class="mini-frame">${spriteArt(idx)}</div>
+      <div class="name">${escapeHtml(card.title_en)}</div>
+      <div class="zh">${escapeHtml(card.title_zh)}</div>
+    </div>`;
+  }).join('') : `<div class="empty">${text('没有符合条件的卡牌。','No cards matched your search.')}</div>`;
+}
+
+function downloadCardById(id){
+  const card = state.cards.find(c => c.id === id);
+  if(card) downloadCard(card);
+}
+
+async function init(){
+  const res = await fetch('cards.json');
+  state.cards = await res.json();
+  document.getElementById('langBtn').addEventListener('click', () => {
+    state.lang = state.lang === 'both' ? 'zh' : state.lang === 'zh' ? 'en' : 'both';
+    updateProgress();
+    renderWizard();
+    renderGallery();
+  });
+  document.getElementById('restartBtn').addEventListener('click', restartReading);
+  document.getElementById('searchInput').addEventListener('input', renderGallery);
+  document.getElementById('suitFilter').addEventListener('change', renderGallery);
+  updateProgress();
+  renderWizard();
+  renderGallery();
+}
+
+init();
