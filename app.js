@@ -686,25 +686,58 @@ function downloadCard(card){
 }
 
 function renderGallery(){
-  const q = (document.getElementById('searchInput').value || '').toLowerCase();
-  const suit = document.getElementById('suitFilter').value;
-  const items = state.cards.filter(card => {
-    const hit = `${card.title_en} ${card.title_zh} ${card.suit}`.toLowerCase().includes(q);
-    const okSuit = suit === 'all' || card.suit === suit || (suit === 'Major' && card.arcana === 'Major Arcana');
-    return hit && okSuit;
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  const suit=document.getElementById('suitFilter').value;
+  const items=state.cards.filter(card=>{
+    const hit=`${card.title_en} ${card.title_zh} ${card.suit}`.toLowerCase().includes(q);
+    const okSuit=suit==='all'||card.suit===suit||(suit==='Major'&&card.arcana==='Major Arcana');
+    return hit&&okSuit;
   });
-  document.getElementById('galleryGrid').innerHTML = items.length ? items.map(card => {
-    const idx = state.cards.findIndex(x => x.id === card.id);
-    return `<div class="g-card" onclick="downloadCardById('${card.id}')">
+  document.getElementById('galleryGrid').innerHTML=items.length?items.map(card=>{
+    const idx=state.cards.findIndex(x=>x.id===card.id);
+    return `<div class="g-card" onclick="openCardModal('${card.id}')">
       <div class="mini-frame">${spriteArt(idx)}</div>
       <div class="name">${escapeHtml(card.title_en)}</div>
       <div class="zh">${escapeHtml(card.title_zh)}</div>
     </div>`;
-  }).join('') : `<div class="empty">${text('没有符合条件的卡牌。','No cards matched your search.')}</div>`;
+  }).join(''):`<div class="empty">${text('没有符合条件的卡牌。','No cards matched your search.')}</div>`;
+}
+
+function openCardModal(id){
+  const card=state.cards.find(c=>c.id===id);
+  if(!card) return;
+  const idx=state.cards.findIndex(c=>c.id===id);
+  const upZh=buildChineseMeaning(card,false,'现在');
+  const revZh=buildChineseMeaning(card,true,'现在');
+  const upText=state.lang==='en'?escapeHtml(card.meaning_upright):state.lang==='zh'?escapeHtml(upZh):escapeHtml(upZh)+'<br><span class="en">'+escapeHtml(card.meaning_upright)+'</span>';
+  const revText=state.lang==='en'?escapeHtml(card.meaning_reversed):state.lang==='zh'?escapeHtml(revZh):escapeHtml(revZh)+'<br><span class="en">'+escapeHtml(card.meaning_reversed)+'</span>';
+  const html='<div class="card-detail-layout">'+
+    '<div class="card-detail-art">'+spriteArt(idx)+'</div>'+
+    '<div class="card-detail-copy">'+
+      '<div class="eyebrow">'+escapeHtml(card.arcana)+' · '+escapeHtml(card.suit||'')+'</div>'+
+      '<h2>'+escapeHtml(card.title_en)+'</h2>'+
+      '<div class="cn-name">'+escapeHtml(card.title_zh)+'</div>'+
+      '<div class="meaning-block"><h3>'+text('正位','Upright')+'</h3><div class="keywords">'+escapeHtml(card.keywords_upright)+'</div><p>'+upText+'</p></div>'+
+      '<div class="meaning-block"><h3>'+text('逆位','Reversed')+'</h3><div class="keywords">'+escapeHtml(card.keywords_reversed)+'</div><p>'+revText+'</p></div>'+
+      '<div class="action-row"><button class="primary" onclick="downloadCardById(\''+card.id+'\')">'+text('下载这张牌','Download this card')+'</button><button class="ghost" onclick="closeCardModal()">'+text('关闭','Close')+'</button></div>'+
+    '</div></div>';
+  document.getElementById('cardModalContent').innerHTML=html;
+  const modal=document.getElementById('cardModal');
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+}
+
+function closeCardModal(){
+  const modal=document.getElementById('cardModal');
+  if(!modal) return;
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('modal-open');
 }
 
 function downloadCardById(id){
-  const card = state.cards.find(c => c.id === id);
+  const card=state.cards.find(c=>c.id===id);
   if(card) downloadCard(card);
 }
 
