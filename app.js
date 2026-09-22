@@ -400,7 +400,7 @@ function renderWizard(){
         <div class="center-stage">
           <div>
             <div class="shuffle-wrap">
-              ${state.countdown ? `<div class="countdown-orb"><span>${state.countdown}</span><small>${text('专注你的问题','Focus on your question')}</small></div>` : ''}
+              ${state.countdown ? `<div class="countdown-orb"><span>${state.countdown}</span><small>${text('专注你的问题','Focus on your question')}</small><div class="countdown-actions"><button onclick="skipCountdown()">${text('跳过','Skip')}</button><button onclick="cancelCountdown()">${text('取消','Cancel')}</button></div></div>` : ''}
               <div id="deckStack" class="deck-stack ${state.shuffling?'shuffling':''}">
                 <div class="back-card"></div>
                 <div class="back-card"></div>
@@ -464,30 +464,45 @@ function saveSpread(){
   nextStep();
 }
 
+function beginShuffleNow(){
+  if(state.countdownTimer){ clearInterval(state.countdownTimer); state.countdownTimer=null; }
+  state.countdown=0;
+  state.shuffling=true;
+  renderWizard();
+  playShuffleSound();
+  setTimeout(pulseShuffleAudio,380);
+  setTimeout(()=>{
+    prepareDeck();
+    state.shuffling=false;
+    playTone(620,.18,.025);
+    renderWizard();
+  },3000);
+}
+
 function startShuffle(){
   if(state.shuffling || state.countdown) return;
   audio();
-  state.countdown = 3;
+  state.countdown=3;
   renderWizard();
-  const tick = setInterval(() => {
-    playTone(300 + (4-state.countdown)*70,.08,.018);
-    state.countdown -= 1;
-    if(state.countdown > 0){
-      renderWizard();
-      return;
-    }
-    clearInterval(tick);
-    state.shuffling = true;
-    renderWizard();
-    playShuffleSound();
-    setTimeout(pulseShuffleAudio, 380);
-    setTimeout(() => {
-      prepareDeck();
-      state.shuffling = false;
-      playTone(620,.18,.025);
-      renderWizard();
-    }, 3000);
-  }, 1000);
+  state.countdownTimer=setInterval(()=>{
+    playTone(300+(4-state.countdown)*70,.08,.018);
+    state.countdown-=1;
+    if(state.countdown>0){ renderWizard(); return; }
+    clearInterval(state.countdownTimer);
+    state.countdownTimer=null;
+    beginShuffleNow();
+  },1000);
+}
+
+function skipCountdown(){
+  if(!state.countdown) return;
+  beginShuffleNow();
+}
+
+function cancelCountdown(){
+  if(state.countdownTimer){ clearInterval(state.countdownTimer); state.countdownTimer=null; }
+  state.countdown=0;
+  renderWizard();
 }
 
 function revealCard(slotIndex){
@@ -508,6 +523,7 @@ function revealCard(slotIndex){
 function enterSite(mode='reading'){
   state.introEntered=true;
   audio();
+  startAmbient();
   playTone(240,.16,.018);
   setTimeout(()=>playTone(420,.22,.015),110);
   const gate=document.getElementById('introGate');
