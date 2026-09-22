@@ -16,13 +16,17 @@
         <p class="sub">step by step • one question at a time • shuffle • draw • reveal</p>
       </div>
       <div class="top-actions">
+        <div class="mode-tabs">
+          <button id="readingModeBtn" class="mode-btn active">占卜</button>
+          <button id="dailyModeBtn" class="mode-btn">每日一抽</button>
+        </div>
         <button id="soundBtn" class="ghost small-btn">声音 ON</button>
         <button id="langBtn" class="ghost small-btn">中文 / EN</button>
         <button id="restartBtn" class="ghost small-btn">重新开始</button>
       </div>
     </header>
 
-    <main class="layout">
+    <main id="readingMode" class="layout">
       <aside class="sidebar panel">
         <div class="progress-title">Reading Flow</div>
         <div id="progressList" class="progress-list"></div>
@@ -37,7 +41,11 @@
       </section>
     </main>
 
-    <section class="panel gallery-panel">
+    <section id="dailyMode" class="panel daily-panel hidden">
+      <div id="dailyStage"></div>
+    </section>
+
+    <section id="galleryPanel" class="panel gallery-panel">
       <div class="gallery-head">
         <div>
           <div class="eyebrow">CARD LIBRARY</div>
