@@ -13,7 +13,8 @@ const state = {
   audioCtx: null,
   dailyPool: [],
   dailySelected: null,
-  cards: []
+  cards: [],
+  introEntered: false
 };
 
 const ui = {
@@ -474,6 +475,20 @@ function revealCard(slotIndex){
 }
 
 
+
+function enterSite(mode='reading'){
+  state.introEntered=true;
+  audio();
+  playTone(240,.16,.018);
+  setTimeout(()=>playTone(420,.22,.015),110);
+  const gate=document.getElementById('introGate');
+  document.body.classList.remove('intro-open');
+  if(gate) gate.classList.add('closing');
+  setTimeout(()=>{ if(gate) gate.remove(); },980);
+  setMode(mode);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
 function localDateKey(){
   const d=new Date();
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -667,8 +682,13 @@ async function init(){
   document.getElementById('restartBtn').addEventListener('click', restartReading);
   document.getElementById('readingModeBtn').addEventListener('click',()=>setMode('reading'));
   document.getElementById('dailyModeBtn').addEventListener('click',()=>setMode('daily'));
+  const enterReading=document.getElementById('enterReadingBtn');
+  const enterDaily=document.getElementById('enterDailyBtn');
+  if(enterReading) enterReading.addEventListener('click',()=>enterSite('reading'));
+  if(enterDaily) enterDaily.addEventListener('click',()=>enterSite('daily'));
   document.getElementById('searchInput').addEventListener('input', renderGallery);
   document.getElementById('suitFilter').addEventListener('change', renderGallery);
+  document.body.classList.add('intro-open');
   updateProgress();
   setSoundLabel();
   renderWizard();
