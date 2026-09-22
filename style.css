@@ -64,3 +64,92 @@ input[type=text],textarea,select{width:100%;background:#0f0e0b;border:1px solid 
 .hidden{display:none !important}
 @media (max-width:1100px){.layout{grid-template-columns:1fr}.sidebar{position:static}.inline,.result-card{grid-template-columns:1fr}.result-card{display:grid}.topbar{flex-direction:column}}
 @media (max-width:700px){.app-shell{padding:12px}.main,.sidebar,.gallery-panel{padding:16px}.card-frame,.result-grid .card-frame{width:150px;height:225px}.result-card{grid-template-columns:1fr}.draw-grid{grid-template-columns:1fr 1fr}.choice-grid{grid-template-columns:1fr}.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Immersive ritual upgrade */
+.countdown-orb{
+  position:absolute; inset:0; z-index:8; margin:auto;
+  width:178px; height:178px; border-radius:50%;
+  display:grid; place-items:center; align-content:center; text-align:center;
+  background:radial-gradient(circle,rgba(239,230,216,.14),rgba(14,12,10,.94) 64%,rgba(7,7,6,.98));
+  border:1px solid rgba(215,199,174,.6);
+  box-shadow:0 0 0 18px rgba(203,181,143,.03),0 0 70px rgba(203,181,143,.18);
+  animation:breatheOrb 1s ease-in-out infinite;
+}
+.countdown-orb span{font-size:68px;line-height:1;color:var(--accent);text-shadow:0 0 24px rgba(234,223,205,.28)}
+.countdown-orb small{margin-top:10px;max-width:130px;color:var(--muted);font:11px/1.5 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+@keyframes breatheOrb{0%,100%{transform:scale(.96);opacity:.88}50%{transform:scale(1.03);opacity:1}}
+
+.face.back,
+.back-card{
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 19%, rgba(213,196,168,.14) 20% 20.8%, transparent 21%),
+    radial-gradient(circle at 50% 50%, transparent 0 33%, rgba(213,196,168,.08) 34% 34.8%, transparent 35%),
+    radial-gradient(circle at 50% 50%, rgba(32,27,21,.5), transparent 58%),
+    linear-gradient(145deg,#1b1712,#090806);
+}
+.face.back::before,
+.back-card::before{
+  box-shadow:
+    inset 0 0 0 1px rgba(215,199,174,.16),
+    0 0 0 5px rgba(215,199,174,.025);
+}
+.face.back::after,
+.back-card::after{
+  content:"✦";
+  display:grid;
+  place-items:center;
+  color:rgba(234,223,205,.74);
+  font-size:26px;
+  text-shadow:0 0 14px rgba(234,223,205,.22);
+}
+
+.card-frame.revealed .face.front{
+  animation:revealGlow 1.15s ease-out both;
+}
+@keyframes revealGlow{
+  0%{box-shadow:0 0 0 rgba(234,223,205,0);filter:brightness(.72)}
+  45%{box-shadow:0 0 34px rgba(234,223,205,.28);filter:brightness(1.08)}
+  100%{box-shadow:0 10px 28px rgba(0,0,0,.28);filter:brightness(1)}
+}
+
+.draw-slot{
+  transition:border-color .3s ease,background .3s ease,transform .3s ease;
+}
+.draw-slot:not(.done):has(.card-frame:hover){
+  border-color:#8d7960;
+  background:rgba(234,223,205,.045);
+  transform:translateY(-2px);
+}
+.deck-stack.shuffling{
+  filter:drop-shadow(0 0 24px rgba(203,181,143,.1));
+}
+.deck-stack.shuffling::after{
+  content:"";
+  position:absolute; inset:-40px;
+  border:1px solid rgba(203,181,143,.12);
+  border-radius:50%;
+  animation:ritualRing 2.1s linear infinite;
+}
+@keyframes ritualRing{
+  from{transform:rotate(0deg) scale(.92);opacity:.22}
+  50%{opacity:.7}
+  to{transform:rotate(360deg) scale(1.06);opacity:.22}
+}
+
+.result-card{
+  animation:resultRise .55s ease both;
+}
+.result-card:nth-child(2){animation-delay:.08s}
+.result-card:nth-child(3){animation-delay:.16s}
+.result-card:nth-child(4){animation-delay:.24s}
+.result-card:nth-child(5){animation-delay:.32s}
+@keyframes resultRise{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:none}
+}
+
+@media(max-width:700px){
+  .countdown-orb{width:150px;height:150px}
+  .countdown-orb span{font-size:56px}
+}
