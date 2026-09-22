@@ -1,6 +1,7 @@
 
 const state = {
   lang: 'both',
+  mode: 'reading',
   step: 0,
   form: {topic:'general', question:'', timeframe:'', person:'', context:'', spread:3, deck:'full', reversals:true},
   preparedDeck: [],
@@ -10,6 +11,8 @@ const state = {
   countdown: 0,
   sound: true,
   audioCtx: null,
+  dailyPool: [],
+  dailySelected: null,
   cards: []
 };
 
@@ -470,6 +473,125 @@ function revealCard(slotIndex){
   renderWizard();
 }
 
+
+function localDateKey(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function secureShuffle(arr){
+  const a=[...arr];
+  if(window.crypto && crypto.getRandomValues){
+    const buf=new Uint32Array(a.length);
+    crypto.getRandomValues(buf);
+    for(let i=a.length-1;i>0;i--){
+      const j=buf[i]%(i+1);
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  return shuffle(a);
+}
+
+function getDailySaved(){
+  try{
+    const raw=localStorage.getItem('darkTarotDailyDraw');
+    if(!raw) return null;
+    const obj=JSON.parse(raw);
+    return obj.date===localDateKey()?obj:null;
+  }catch(e){ return null; }
+}
+
+function setMode(mode){
+  state.mode=mode;
+  const reading=document.getElementById('readingMode');
+  const daily=document.getElementById('dailyMode');
+  const gallery=document.getElementById('galleryPanel');
+  reading.classList.toggle('hidden', mode!=='reading');
+  daily.classList.toggle('hidden', mode!=='daily');
+  gallery.classList.toggle('hidden', mode!=='reading');
+  document.getElementById('readingModeBtn').classList.toggle('active',mode==='reading');
+  document.getElementById('dailyModeBtn').classList.toggle('active',mode==='daily');
+  if(mode==='daily') renderDaily();
+}
+
+function prepareDailyPool(){
+  if(!state.dailyPool.length) state.dailyPool=secureShuffle(state.cards.map((card,index)=>({card,index})));
+}
+
+function dailyMeaning(card,reversed){
+  const keywords=reversed?card.keywords_reversed:card.keywords_upright;
+  const meaning=reversed?card.meaning_reversed:card.meaning_upright;
+  const zh=buildChineseMeaning(card,reversed,'现在');
+  return {keywords,meaning,zh};
+}
+
+function chooseDailyCard(slot){
+  if(state.dailySelected) return;
+  prepareDailyPool();
+  const pick=state.dailyPool[slot];
+  if(!pick) return;
+  const reversed=Math.random()<.5;
+  state.dailySelected={date:localDateKey(),cardId:pick.card.id,reversed,slot};
+  localStorage.setItem('darkTarotDailyDraw',JSON.stringify(state.dailySelected));
+  playFlipSound();
+  if(navigator.vibrate) navigator.vibrate([18,35,18]);
+  renderDaily();
+}
+
+function renderDaily(){
+  const root=document.getElementById('dailyStage');
+  if(!root) return;
+  const saved=getDailySaved();
+  if(saved) state.dailySelected=saved;
+  prepareDailyPool();
+
+  if(state.dailySelected){
+    const card=state.cards.find(c=>c.id===state.dailySelected.cardId);
+    if(!card){ localStorage.removeItem('darkTarotDailyDraw'); state.dailySelected=null; return renderDaily(); }
+    const idx=state.cards.findIndex(c=>c.id===card.id);
+    const m=dailyMeaning(card,state.dailySelected.reversed);
+    const ori=state.dailySelected.reversed?text('逆位','Reversed'):text('正位','Upright');
+    root.innerHTML=`
+      <div class="daily-hero">
+        <div class="eyebrow">DAILY DRAW</div>
+        <h2>${text('今天，你抽到的是','Your card for today')}</h2>
+        <p class="sub">${text('这张牌会保留到今天结束。明天再回来，会重新展开整副牌。','This card stays with you for the rest of today. Come back tomorrow for a new spread.')}</p>
+      </div>
+      <div class="daily-result">
+        <div class="daily-card-large revealed">
+          <div class="flip"><div class="face back"></div><div class="face front">${spriteArt(idx,state.dailySelected.reversed)}</div></div>
+        </div>
+        <div class="daily-message">
+          <div class="badge">${ori}</div>
+          <h2>${escapeHtml(card.title_en)}</h2>
+          <div class="cn-name">${escapeHtml(card.title_zh)}</div>
+          <div class="text-block"><strong>${text('今日关键词','Today’s keywords')}</strong><br>${escapeHtml(m.keywords)}</div>
+          <div class="text-block" style="margin-top:12px"><strong>${text('今日讯息','Today’s message')}</strong><br>${state.lang==='en'?escapeHtml(m.meaning):state.lang==='zh'?escapeHtml(m.zh):`${escapeHtml(m.zh)}<br><span class="en">${escapeHtml(m.meaning)}</span>`}</div>
+          <div class="daily-note">${text('把它当作今天值得留意的主题，而不是固定预言。','Use it as a theme to notice today rather than a fixed prediction.')}</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  root.innerHTML=`
+    <div class="daily-hero">
+      <div class="eyebrow">DAILY DRAW</div>
+      <h2>${text('每日一抽','One card for today')}</h2>
+      <p class="sub">${text('不要急着选。左右滑动整副牌，停在最吸引你的那一张，然后点下去。','Do not rush. Move across the full deck, stop at the card that pulls you in, then tap it.')}</p>
+    </div>
+    <div class="daily-instruction">${text('78 张牌都在这里 · 凭第一直觉选择一张','All 78 cards are here · choose with your first instinct')}</div>
+    <div class="daily-scroll">
+      <div class="daily-fan">
+        ${state.dailyPool.map((x,i)=>`<button class="daily-pick" style="--i:${i};--rot:${((i%13)-6)*0.45}deg" onclick="chooseDailyCard(${i})" aria-label="Choose card ${i+1}">
+          <span class="mini-back"><span class="back-star">✦</span></span>
+        </button>`).join('')}
+      </div>
+    </div>
+    <div class="daily-hint">${text('提示：你看不到牌面，直到真正选中它。','You will not see the face until you actually choose it.')}</div>
+  `;
+}
+
 function restartReading(){
   state.step = 0;
   state.form = {topic:'general', question:'', timeframe:'', person:'', context:'', spread:3, deck:'full', reversals:true};
@@ -534,6 +656,7 @@ async function init(){
     updateProgress();
     renderWizard();
     renderGallery();
+    renderDaily();
     setSoundLabel();
   });
   document.getElementById('soundBtn').addEventListener('click', () => {
@@ -542,12 +665,16 @@ async function init(){
     setSoundLabel();
   });
   document.getElementById('restartBtn').addEventListener('click', restartReading);
+  document.getElementById('readingModeBtn').addEventListener('click',()=>setMode('reading'));
+  document.getElementById('dailyModeBtn').addEventListener('click',()=>setMode('daily'));
   document.getElementById('searchInput').addEventListener('input', renderGallery);
   document.getElementById('suitFilter').addEventListener('change', renderGallery);
   updateProgress();
   setSoundLabel();
   renderWizard();
   renderGallery();
+  renderDaily();
+  setMode(state.mode);
 }
 
 init();
