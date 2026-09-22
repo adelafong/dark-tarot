@@ -313,31 +313,76 @@ function simpleTranslateBase(en){
   return found ? found[1] : '它提醒你把这张牌的关键词放回你现在的情境里理解，答案会更贴近你。';
 }
 
+function cardStorySentence(item,posZh,posEn){
+  const c=item.card;
+  const kw=item.reversed?c.keywords_reversed:c.keywords_upright;
+  const modeZh=item.reversed?'逆位':'正位';
+  const modeEn=item.reversed?'reversed':'upright';
+  const zhMap={
+    '过去':'在故事的开端，','现在':'来到现在，','未来':'接下来，','现状':'这件事目前的核心是，','挑战':'真正的阻力在于，','隐藏影响':'表面之下，','建议':'牌给出的转折点是，','发展结果':'如果沿着现在的能量继续走，'
+  };
+  const enMap={
+    'Past':'At the beginning of this story, ','Present':'In the present moment, ','Future':'From here, ','Current energy':'Right now, ','Situation':'At the heart of the situation, ','Challenge':'The main tension is that ','Hidden influence':'Under the surface, ','Advice':'The turning point comes through ','Likely outcome':'If the current energy continues, '
+  };
+  const zh=(zhMap[posZh]||'这一张牌显示，')+c.title_zh+modeZh+'带出「'+kw+'」的主题。'+buildChineseMeaning(c,item.reversed,posZh);
+  const en=(enMap[posEn]||'This card shows that ')+c.title_en+' '+modeEn+' brings the theme of '+kw+'. '+(item.reversed?c.meaning_reversed:c.meaning_upright);
+  return {zh,en};
+}
+
+function buildStoryNarrative(){
+  const zhPos=ui.zh.positions[state.form.spread];
+  const enPos=ui.en.positions[state.form.spread];
+  const parts=state.drawn.map((item,i)=>cardStorySentence(item,zhPos[i],enPos[i]));
+  const q=state.form.question?('你问的是「'+state.form.question+'」。'):'这次牌阵没有被一个单一问题限制，所以它更像是在描绘你目前的一段人生章节。';
+  const qEn=state.form.question?('Your question is: “'+state.form.question+'.”'):'Because there is no single fixed question, this reading acts more like a portrait of your current chapter.';
+  const context=state.form.context?('你补充的背景是：'+state.form.context+'。'):' ';
+  const contextEn=state.form.context?('The context you gave is: '+state.form.context+'.'):' ';
+  let zhOpening=q+' '+context+' '+ui.zh.focusIntro[state.form.topic];
+  let enOpening=qEn+' '+contextEn+' '+ui.en.focusIntro[state.form.topic];
+
+  let zhFlow=''; let enFlow='';
+  if(state.form.spread===1){
+    zhFlow='这不是一条复杂的时间线，而像是一盏灯照在当下。'+parts[0].zh+' 这张牌不是替你做决定，而是在指出今天最值得看清的一件事。';
+    enFlow='This is not a long timeline; it is more like a lamp shining on the present. '+parts[0].en+' The card is not making the decision for you, but showing what deserves your attention most right now.';
+  } else if(state.form.spread===3){
+    zhFlow=parts[0].zh+' '+parts[1].zh+' 这表示过去留下的东西，正在现在这个节点上被重新面对。'+parts[2].zh+' 所以这三张牌连起来并不是三个孤立答案，而是一条从旧经验、当下选择，到下一阶段走向的连续故事。';
+    enFlow=parts[0].en+' '+parts[1].en+' This suggests that something carried forward from the past is being confronted again in the present. '+parts[2].en+' Together, the three cards form one continuous story moving from prior experience, through the present choice, toward the next stage.';
+  } else {
+    zhFlow=parts[0].zh+' '+parts[1].zh+' '+parts[2].zh+' 这三张先把舞台搭好：你看到的表面问题，和真正推动它的力量并不完全相同。'+parts[3].zh+' 这里是整组牌最重要的转折，因为它说明你并不是只能被局势推着走。'+parts[4].zh+' 因此最后一张更像“目前道路的终点提示”，不是不能改变的命运。';
+    enFlow=parts[0].en+' '+parts[1].en+' '+parts[2].en+' These first cards set the stage: the visible problem and the force actually driving it are not exactly the same. '+parts[3].en+' This is the key turning point of the spread, because it shows where you still have agency. '+parts[4].en+' The final card is therefore best read as the destination of the current road, not an unchangeable fate.';
+  }
+
+  const majors=state.drawn.filter(x=>x.card.arcana==='Major Arcana').length;
+  const reversals=state.drawn.filter(x=>x.reversed).length;
+  const zhTone=(majors>=2?'大阿尔卡那出现得比较多，说明这件事不只是短期情绪，而像是一个更重要的人生课题。':'这组牌更偏向日常层面的选择和调整，重点在具体行动。')+(reversals>=Math.ceil(state.drawn.length/2)?' 同时逆位偏多，表示很多能量目前不是直接向外发展，而是在内心、延迟、犹豫或尚未说出口的部分里发生。':' 整体能量相对外显，事情更容易通过行动、沟通或实际变化被看见。');
+  const enTone=(majors>=2?'Several Major Arcana cards suggest that this is not only a passing mood, but part of a larger life lesson.':'The spread leans more toward everyday choices and practical adjustment, so concrete action matters here.')+(reversals>=Math.ceil(state.drawn.length/2)?' The number of reversals also suggests that much of the energy is internal, delayed, hesitant, or not yet fully expressed.':' The energy is relatively outward and visible, so change is more likely to show through action, communication, or practical developments.');
+
+  const zhClose='把整组牌当成一个故事看，它真正强调的不是“事情一定会怎样”，而是“你现在站在哪里、什么正在推动你、以及你还能怎样回应”。这也是你目前最有力量的地方。';
+  const enClose='Read as one story, the spread is less about “what must happen” and more about where you are now, what is moving the situation, and how you can still respond. That is where your agency remains.';
+
+  return {zh:[zhOpening,zhFlow,zhTone,zhClose],en:[enOpening,enFlow,enTone,enClose]};
+}
+
 function buildSummary(){
-  const zhPositions = ui.zh.positions[state.form.spread];
-  const enPositions = ui.en.positions[state.form.spread];
-  const results = state.drawn.map((item, i) => cardResultBlock(item, zhPositions[i], enPositions[i])).join('');
-  const majors = state.drawn.filter(x => x.card.arcana === 'Major Arcana').length;
-  const reversedCount = state.drawn.filter(x => x.reversed).length;
-  const suitCount = state.drawn.reduce((acc, x) => {
-    acc[x.card.suit] = (acc[x.card.suit]||0)+1;
-    return acc;
-  }, {});
-  let zhSummary = `${ui.zh.focusIntro[state.form.topic]} `;
-  let enSummary = `${ui.en.focusIntro[state.form.topic]} `;
-  zhSummary += `这次牌阵里，大阿尔卡那有 ${majors} 张，逆位有 ${reversedCount} 张。`;
-  enSummary += `This spread contains ${majors} Major Arcana card(s) and ${reversedCount} reversed card(s).`;
-  if(suitCount.Cups){ zhSummary += ' 圣杯偏多，表示情绪与关系议题较突出。'; enSummary += ' Cups are prominent, highlighting emotional and relational themes.'; }
-  if(suitCount.Wands){ zhSummary += ' 权杖偏多，表示行动力、热度与推进感很重要。'; enSummary += ' Wands are prominent, highlighting momentum, passion and action.'; }
-  if(suitCount.Swords){ zhSummary += ' 宝剑偏多，表示沟通、压力或真相是关键。'; enSummary += ' Swords are prominent, pointing to communication, pressure or truth.'; }
-  if(suitCount.Pentacles){ zhSummary += ' 星币偏多，表示现实、稳定与资源问题值得关注。'; enSummary += ' Pentacles are prominent, pointing to stability, resources and practical matters.'; }
+  const zhPositions=ui.zh.positions[state.form.spread];
+  const enPositions=ui.en.positions[state.form.spread];
+  const results=state.drawn.map((item,i)=>cardResultBlock(item,zhPositions[i],enPositions[i])).join('');
+  const story=buildStoryNarrative();
+  const storyHtml=state.lang==='zh'
+    ? story.zh.map(p=>'<p>'+escapeHtml(p)+'</p>').join('')
+    : state.lang==='en'
+      ? story.en.map(p=>'<p>'+escapeHtml(p)+'</p>').join('')
+      : story.zh.map(p=>'<p>'+escapeHtml(p)+'</p>').join('')+'<div class="story-divider">✦</div>'+story.en.map(p=>'<p class="en">'+escapeHtml(p)+'</p>').join('');
   return `
     <div class="step-header">
       <div class="eyebrow">REVEAL</div>
-      <h2>${text('你的占卜结果','Your reading result')}</h2>
-      <p>${text('先看整体讯息，再慢慢读每一张牌。','Read the overall message first, then move through each card slowly.')}</p>
+      <h2>${text('你的完整故事解读','Your full narrative reading')}</h2>
+      <p>${text('先把整组牌当成一段故事来读，再回到每张牌看细节。','Read the spread first as one continuous story, then return to each card for detail.')}</p>
     </div>
-    <div class="summary-box text-block">${state.lang==='en' ? escapeHtml(enSummary) : state.lang==='zh' ? escapeHtml(zhSummary) : `${escapeHtml(zhSummary)}<br><span class="en">${escapeHtml(enSummary)}</span>`}</div>
+    <div class="story-reading">
+      <div class="story-kicker">${text('整体故事线','THE STORYLINE')}</div>
+      <div class="story-body">${storyHtml}</div>
+    </div>
     <div class="result-grid">${results}</div>
     <div class="action-row"><button class="primary" onclick="restartReading()">${text('再抽一次','Start another reading')}</button></div>
   `;
