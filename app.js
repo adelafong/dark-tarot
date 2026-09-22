@@ -136,14 +136,10 @@ function setMasterVolume(){
 
 function startAmbient(){
   const ctx=audio(); if(!ctx || state.ambientNodes.length) return;
-  const droneGain=ctx.createGain(); droneGain.gain.value=.045; droneGain.connect(state.masterGain);
-  const o1=ctx.createOscillator(),o2=ctx.createOscillator(),o3=ctx.createOscillator();
-  o1.type='sine'; o2.type='sine'; o3.type='triangle';
-  o1.frequency.value=110; o2.frequency.value=164.81; o3.frequency.value=220;
-  o1.detune.value=-6; o2.detune.value=4; o3.detune.value=2;
-  o1.connect(droneGain); o2.connect(droneGain); o3.connect(droneGain);
-  o1.start(); o2.start(); o3.start();
-  state.ambientNodes=[o1,o2,o3,droneGain];
+  const anchor=ctx.createGain();
+  anchor.gain.value=.0001;
+  anchor.connect(state.masterGain);
+  state.ambientNodes=[anchor];
   scheduleAmbientMelody();
 }
 
