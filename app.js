@@ -7,6 +7,9 @@ const state = {
   drawIndex: 0,
   drawn: [],
   shuffling: false,
+  countdown: 0,
+  sound: true,
+  audioCtx: null,
   cards: []
 };
 
@@ -101,6 +104,58 @@ function currentUI(){
 
 function escapeHtml(str=''){
   return String(str).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+
+function audio(){
+  if(!state.sound) return null;
+  if(!state.audioCtx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    state.audioCtx = new AC();
+  }
+  if(state.audioCtx.state === 'suspended') state.audioCtx.resume();
+  return state.audioCtx;
+}
+
+function playTone(freq=520, duration=.09, gain=.035){
+  const ctx = audio(); if(!ctx) return;
+  const osc = ctx.createOscillator(), g = ctx.createGain();
+  osc.type = 'sine'; osc.frequency.value = freq;
+  g.gain.setValueAtTime(gain, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + duration);
+  osc.connect(g); g.connect(ctx.destination);
+  osc.start(); osc.stop(ctx.currentTime + duration);
+}
+
+function playFlipSound(){
+  playTone(420,.055,.025);
+  setTimeout(()=>playTone(720,.12,.018),45);
+}
+
+function playShuffleSound(){
+  const ctx = audio(); if(!ctx) return;
+  const length = Math.floor(ctx.sampleRate * .34);
+  const buffer = ctx.createBuffer(1,length,ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<length;i++) data[i]=(Math.random()*2-1)*(1-i/length);
+  const src = ctx.createBufferSource();
+  const filter = ctx.createBiquadFilter();
+  const gain = ctx.createGain();
+  filter.type='bandpass'; filter.frequency.value=1450; filter.Q.value=.7;
+  gain.gain.value=.026;
+  src.buffer=buffer; src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+  src.start();
+}
+
+function pulseShuffleAudio(){
+  if(!state.sound || !state.shuffling) return;
+  playShuffleSound();
+  setTimeout(pulseShuffleAudio, 420);
+}
+
+function setSoundLabel(){
+  const b=document.getElementById('soundBtn');
+  if(b) b.textContent = state.sound ? (state.lang==='en'?'SOUND ON':'声音 ON') : (state.lang==='en'?'SOUND OFF':'声音 OFF');
 }
 
 function shuffle(arr){
@@ -312,6 +367,7 @@ function renderWizard(){
         <div class="center-stage">
           <div>
             <div class="shuffle-wrap">
+              ${state.countdown ? `<div class="countdown-orb"><span>${state.countdown}</span><small>${text('专注你的问题','Focus on your question')}</small></div>` : ''}
               <div id="deckStack" class="deck-stack ${state.shuffling?'shuffling':''}">
                 <div class="back-card"></div>
                 <div class="back-card"></div>
@@ -376,13 +432,29 @@ function saveSpread(){
 }
 
 function startShuffle(){
-  state.shuffling = true;
+  if(state.shuffling || state.countdown) return;
+  audio();
+  state.countdown = 3;
   renderWizard();
-  setTimeout(() => {
-    prepareDeck();
-    state.shuffling = false;
+  const tick = setInterval(() => {
+    playTone(300 + (4-state.countdown)*70,.08,.018);
+    state.countdown -= 1;
+    if(state.countdown > 0){
+      renderWizard();
+      return;
+    }
+    clearInterval(tick);
+    state.shuffling = true;
     renderWizard();
-  }, 2600);
+    playShuffleSound();
+    setTimeout(pulseShuffleAudio, 380);
+    setTimeout(() => {
+      prepareDeck();
+      state.shuffling = false;
+      playTone(620,.18,.025);
+      renderWizard();
+    }, 3000);
+  }, 1000);
 }
 
 function revealCard(slotIndex){
@@ -390,6 +462,8 @@ function revealCard(slotIndex){
   if(slotIndex !== state.drawn.length) return;
   const card = state.preparedDeck[state.drawIndex];
   if(!card) return;
+  playFlipSound();
+  if(navigator.vibrate) navigator.vibrate(18);
   const reversed = state.form.reversals ? Math.random() < 0.5 : false;
   state.drawn.push({card, reversed});
   state.drawIndex += 1;
@@ -403,6 +477,7 @@ function restartReading(){
   state.drawIndex = 0;
   state.drawn = [];
   state.shuffling = false;
+  state.countdown = 0;
   updateProgress();
   renderWizard();
 }
@@ -459,11 +534,18 @@ async function init(){
     updateProgress();
     renderWizard();
     renderGallery();
+    setSoundLabel();
+  });
+  document.getElementById('soundBtn').addEventListener('click', () => {
+    state.sound = !state.sound;
+    if(state.sound) playTone(520,.09,.02);
+    setSoundLabel();
   });
   document.getElementById('restartBtn').addEventListener('click', restartReading);
   document.getElementById('searchInput').addEventListener('input', renderGallery);
   document.getElementById('suitFilter').addEventListener('change', renderGallery);
   updateProgress();
+  setSoundLabel();
   renderWizard();
   renderGallery();
 }
