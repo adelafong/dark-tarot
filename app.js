@@ -14,6 +14,7 @@ const state = {
   audioCtx: null,
   masterGain: null,
   ambientNodes: [],
+  ambientTimer: null,
   countdownTimer: null,
   dailyPool: [],
   dailySelected: null,
@@ -135,17 +136,54 @@ function setMasterVolume(){
 
 function startAmbient(){
   const ctx=audio(); if(!ctx || state.ambientNodes.length) return;
-  const g=ctx.createGain(); g.gain.value=.055; g.connect(state.masterGain);
-  const o1=ctx.createOscillator(),o2=ctx.createOscillator(),lfo=ctx.createOscillator(),lfoGain=ctx.createGain();
-  o1.type='sine'; o2.type='sine'; o1.frequency.value=110; o2.frequency.value=164.81;
-  lfo.frequency.value=.08; lfoGain.gain.value=.012;
-  lfo.connect(lfoGain); lfoGain.connect(g.gain);
-  o1.connect(g); o2.connect(g);
-  o1.start(); o2.start(); lfo.start();
-  state.ambientNodes=[o1,o2,lfo,g,lfoGain];
+  const droneGain=ctx.createGain(); droneGain.gain.value=.045; droneGain.connect(state.masterGain);
+  const o1=ctx.createOscillator(),o2=ctx.createOscillator(),o3=ctx.createOscillator();
+  o1.type='sine'; o2.type='sine'; o3.type='triangle';
+  o1.frequency.value=110; o2.frequency.value=164.81; o3.frequency.value=220;
+  o1.detune.value=-6; o2.detune.value=4; o3.detune.value=2;
+  o1.connect(droneGain); o2.connect(droneGain); o3.connect(droneGain);
+  o1.start(); o2.start(); o3.start();
+  state.ambientNodes=[o1,o2,o3,droneGain];
+  scheduleAmbientMelody();
+}
+
+function playAmbientBell(freq,when=0,duration=1.8,amp=.018){
+  const ctx=audio(); if(!ctx || !state.sound) return;
+  const osc=ctx.createOscillator();
+  const overtone=ctx.createOscillator();
+  const g=ctx.createGain();
+  const filter=ctx.createBiquadFilter();
+  osc.type='sine'; overtone.type='sine';
+  osc.frequency.value=freq; overtone.frequency.value=freq*2.01;
+  filter.type='lowpass'; filter.frequency.value=1800;
+  const t=ctx.currentTime+when;
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(amp,t+.04);
+  g.gain.exponentialRampToValueAtTime(.0001,t+duration);
+  osc.connect(filter); overtone.connect(filter); filter.connect(g); g.connect(state.masterGain);
+  osc.start(t); overtone.start(t); osc.stop(t+duration+.05); overtone.stop(t+duration+.05);
+}
+
+function scheduleAmbientMelody(){
+  if(state.ambientTimer) clearTimeout(state.ambientTimer);
+  if(!state.sound || !state.ambientNodes.length) return;
+  const scale=[220,261.63,329.63,246.94,196,293.66,329.63,261.63];
+  const pattern=[0,2,1,4,5,3,6,1];
+  let i=0;
+  const phrase=()=>{
+    if(!state.sound || !state.ambientNodes.length) return;
+    const base=scale[pattern[i%pattern.length]];
+    playAmbientBell(base,0,2.4,.012);
+    if(i%2===0) playAmbientBell(base/2,.12,3,.007);
+    if(i%4===3) playAmbientBell(base*1.5,.4,1.8,.006);
+    i++;
+    state.ambientTimer=setTimeout(phrase,1450+(i%3)*180);
+  };
+  phrase();
 }
 
 function stopAmbient(){
+  if(state.ambientTimer){ clearTimeout(state.ambientTimer); state.ambientTimer=null; }
   state.ambientNodes.forEach(n=>{try{if(n.stop)n.stop()}catch(e){} try{if(n.disconnect)n.disconnect()}catch(e){}});
   state.ambientNodes=[];
 }
@@ -757,7 +795,7 @@ async function init(){
     state.sound = !state.sound;
     audio();
     setMasterVolume();
-    if(state.sound){ startAmbient(); playTone(520,.09,.02); }
+    if(state.sound){ startAmbient(); playTone(520,.09,.02); } else { stopAmbient(); }
     setSoundLabel();
   });
   const volumeSlider=document.getElementById('volumeSlider');
