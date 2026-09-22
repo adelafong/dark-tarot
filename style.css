@@ -537,3 +537,183 @@ body.intro-open .site-app{
   .intro-orbit{width:90vw}
   .orbit-b{width:68vw}
 }
+
+
+/* Volume control */
+.volume-control{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:rgba(255,255,255,.02);
+  color:var(--muted);
+  font:10px Arial,sans-serif;
+  letter-spacing:.12em;
+}
+.volume-control input{
+  width:92px;
+  accent-color:#d5c2a4;
+}
+
+/* Mystical question interface */
+#questionField{
+  min-height:170px;
+  padding:24px 22px;
+  border-color:rgba(203,181,143,.5);
+  background:
+    radial-gradient(circle at 50% 12%,rgba(203,181,143,.07),transparent 32%),
+    linear-gradient(180deg,rgba(17,14,11,.95),rgba(10,9,8,.98));
+  box-shadow:
+    inset 0 0 32px rgba(203,181,143,.03),
+    0 0 0 1px rgba(255,255,255,.01),
+    0 18px 40px rgba(0,0,0,.2);
+  line-height:1.8;
+}
+#questionField:focus{
+  border-color:rgba(234,223,205,.75);
+  box-shadow:
+    0 0 0 3px rgba(203,181,143,.05),
+    0 0 34px rgba(203,181,143,.08);
+}
+#questionField::placeholder{color:#766b5f}
+.step:has(#questionField){
+  position:relative;
+}
+.step:has(#questionField)::before{
+  content:"☾  ✦  ☽";
+  display:block;
+  text-align:center;
+  margin:4px auto 20px;
+  color:rgba(234,223,205,.7);
+  letter-spacing:.35em;
+  font-size:26px;
+  text-shadow:0 0 18px rgba(234,223,205,.12);
+}
+.step:has(#questionField)::after{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  pointer-events:none;
+  border-radius:26px;
+  background:
+    radial-gradient(circle at 8% 18%,rgba(255,255,255,.22) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 92% 26%,rgba(255,255,255,.18) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 18% 78%,rgba(255,255,255,.15) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 82% 84%,rgba(255,255,255,.12) 0 1px,transparent 1.5px);
+  opacity:.5;
+  z-index:-1;
+}
+
+/* Countdown actions */
+.countdown-actions{
+  display:flex;
+  gap:6px;
+  margin-top:12px;
+}
+.countdown-actions button{
+  border:1px solid rgba(215,199,174,.28);
+  background:rgba(255,255,255,.02);
+  color:var(--muted);
+  border-radius:999px;
+  padding:6px 9px;
+  cursor:pointer;
+  font:9px Arial,sans-serif;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+/* Card library detail modal */
+body.modal-open{overflow:hidden}
+.card-modal{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:grid;
+  place-items:center;
+  padding:18px;
+}
+.card-modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(2,2,2,.84);
+  backdrop-filter:blur(12px);
+}
+.card-modal-dialog{
+  position:relative;
+  z-index:1;
+  width:min(1040px,94vw);
+  max-height:92vh;
+  overflow:auto;
+  border:1px solid rgba(203,181,143,.35);
+  border-radius:26px;
+  background:
+    radial-gradient(circle at 20% 10%,rgba(203,181,143,.06),transparent 28%),
+    linear-gradient(180deg,#14110e,#0b0a08);
+  box-shadow:0 34px 90px rgba(0,0,0,.65);
+  padding:24px;
+}
+.card-modal-close{
+  position:absolute;
+  right:14px;
+  top:12px;
+  z-index:3;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:#0c0b09;
+  color:var(--ink);
+  cursor:pointer;
+  font-size:24px;
+}
+.card-detail-layout{
+  display:grid;
+  grid-template-columns:minmax(260px,360px) 1fr;
+  gap:28px;
+  align-items:start;
+}
+.card-detail-art{
+  width:100%;
+  aspect-ratio:2/3;
+  overflow:hidden;
+  border-radius:22px;
+  border:1px solid #5a4d3d;
+  box-shadow:0 26px 56px rgba(0,0,0,.4);
+}
+.card-detail-copy h2{
+  font-size:clamp(34px,5vw,58px);
+  margin-top:8px;
+}
+.meaning-block{
+  margin-top:18px;
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(255,255,255,.018);
+}
+.meaning-block h3{
+  font-size:18px;
+  color:var(--gold);
+}
+.meaning-block .keywords{
+  margin-top:8px;
+  color:var(--muted);
+  font:12px/1.7 Arial,sans-serif;
+  letter-spacing:.04em;
+}
+.meaning-block p{
+  margin:10px 0 0;
+  color:var(--ink);
+  font:14px/1.9 Arial,sans-serif;
+}
+.meaning-block .en{color:var(--muted)}
+
+@media(max-width:760px){
+  .volume-control{width:100%;justify-content:center}
+  .volume-control input{width:min(220px,58vw)}
+  .card-detail-layout{grid-template-columns:1fr}
+  .card-detail-art{width:min(320px,78vw);margin:0 auto}
+  .card-modal-dialog{padding:18px}
+}
