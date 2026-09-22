@@ -660,6 +660,7 @@ function restartReading(){
   state.drawn = [];
   state.shuffling = false;
   state.countdown = 0;
+  if(state.countdownTimer){ clearInterval(state.countdownTimer); state.countdownTimer=null; }
   updateProgress();
   renderWizard();
 }
@@ -754,9 +755,20 @@ async function init(){
   });
   document.getElementById('soundBtn').addEventListener('click', () => {
     state.sound = !state.sound;
-    if(state.sound) playTone(520,.09,.02);
+    audio();
+    setMasterVolume();
+    if(state.sound){ startAmbient(); playTone(520,.09,.02); }
     setSoundLabel();
   });
+  const volumeSlider=document.getElementById('volumeSlider');
+  if(volumeSlider){
+    volumeSlider.value=Math.round(state.volume*100);
+    volumeSlider.addEventListener('input',e=>{
+      state.volume=Number(e.target.value)/100;
+      audio();
+      setMasterVolume();
+    });
+  }
   document.getElementById('restartBtn').addEventListener('click', restartReading);
   document.getElementById('readingModeBtn').addEventListener('click',()=>setMode('reading'));
   document.getElementById('dailyModeBtn').addEventListener('click',()=>setMode('daily'));
@@ -766,6 +778,7 @@ async function init(){
   if(enterDaily) enterDaily.addEventListener('click',()=>enterSite('daily'));
   document.getElementById('searchInput').addEventListener('input', renderGallery);
   document.getElementById('suitFilter').addEventListener('change', renderGallery);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCardModal(); });
   document.body.classList.add('intro-open');
   updateProgress();
   setSoundLabel();
