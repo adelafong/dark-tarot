@@ -41,7 +41,11 @@
           <button id="readingModeBtn" class="mode-btn active">占卜</button>
           <button id="dailyModeBtn" class="mode-btn">每日一抽</button>
         </div>
-        <button id="soundBtn" class="ghost small-btn">声音 ON</button>
+        <button id="soundBtn" class="ghost small-btn">音乐 ON</button>
+        <label class="volume-control" title="Volume">
+          <span>VOL</span>
+          <input id="volumeSlider" type="range" min="0" max="100" value="38" aria-label="Volume">
+        </label>
         <button id="langBtn" class="ghost small-btn">中文 / EN</button>
         <button id="restartBtn" class="ghost small-btn">重新开始</button>
       </div>
@@ -71,7 +75,7 @@
         <div>
           <div class="eyebrow">CARD LIBRARY</div>
           <h2>78 张卡牌</h2>
-          <p class="sub">点击卡牌可下载单张图片</p>
+          <p class="sub">点击卡牌放大查看牌面、关键词与含义，再决定是否下载</p>
         </div>
         <div class="gallery-tools">
           <input id="searchInput" type="text" placeholder="搜索 The Moon / 月亮">
@@ -87,6 +91,14 @@
       </div>
       <div id="galleryGrid" class="gallery-grid"></div>
     </section>
+  </div>
+
+  <div id="cardModal" class="card-modal hidden" aria-hidden="true">
+    <div class="card-modal-backdrop" onclick="closeCardModal()"></div>
+    <div class="card-modal-dialog" role="dialog" aria-modal="true" aria-label="Tarot card detail">
+      <button class="card-modal-close" onclick="closeCardModal()" aria-label="Close">×</button>
+      <div id="cardModalContent"></div>
+    </div>
   </div>
 
   <script src="app.js"></script>
