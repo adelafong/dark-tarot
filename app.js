@@ -10,7 +10,11 @@ const state = {
   shuffling: false,
   countdown: 0,
   sound: true,
+  volume: .38,
   audioCtx: null,
+  masterGain: null,
+  ambientNodes: [],
+  countdownTimer: null,
   dailyPool: [],
   dailySelected: null,
   cards: [],
@@ -111,14 +115,39 @@ function escapeHtml(str=''){
 }
 
 function audio(){
-  if(!state.sound) return null;
   if(!state.audioCtx){
     const AC = window.AudioContext || window.webkitAudioContext;
     if(!AC) return null;
     state.audioCtx = new AC();
+    state.masterGain = state.audioCtx.createGain();
+    state.masterGain.gain.value = state.sound ? state.volume : 0;
+    state.masterGain.connect(state.audioCtx.destination);
   }
   if(state.audioCtx.state === 'suspended') state.audioCtx.resume();
   return state.audioCtx;
+}
+
+function setMasterVolume(){
+  if(!state.masterGain) return;
+  const target=state.sound ? state.volume : 0;
+  state.masterGain.gain.setTargetAtTime(target,state.audioCtx.currentTime,.05);
+}
+
+function startAmbient(){
+  const ctx=audio(); if(!ctx || state.ambientNodes.length) return;
+  const g=ctx.createGain(); g.gain.value=.055; g.connect(state.masterGain);
+  const o1=ctx.createOscillator(),o2=ctx.createOscillator(),lfo=ctx.createOscillator(),lfoGain=ctx.createGain();
+  o1.type='sine'; o2.type='sine'; o1.frequency.value=110; o2.frequency.value=164.81;
+  lfo.frequency.value=.08; lfoGain.gain.value=.012;
+  lfo.connect(lfoGain); lfoGain.connect(g.gain);
+  o1.connect(g); o2.connect(g);
+  o1.start(); o2.start(); lfo.start();
+  state.ambientNodes=[o1,o2,lfo,g,lfoGain];
+}
+
+function stopAmbient(){
+  state.ambientNodes.forEach(n=>{try{if(n.stop)n.stop()}catch(e){} try{if(n.disconnect)n.disconnect()}catch(e){}});
+  state.ambientNodes=[];
 }
 
 function playTone(freq=520, duration=.09, gain=.035){
@@ -127,7 +156,7 @@ function playTone(freq=520, duration=.09, gain=.035){
   osc.type = 'sine'; osc.frequency.value = freq;
   g.gain.setValueAtTime(gain, ctx.currentTime);
   g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + duration);
-  osc.connect(g); g.connect(ctx.destination);
+  osc.connect(g); g.connect(state.masterGain);
   osc.start(); osc.stop(ctx.currentTime + duration);
 }
 
@@ -147,7 +176,7 @@ function playShuffleSound(){
   const gain = ctx.createGain();
   filter.type='bandpass'; filter.frequency.value=1450; filter.Q.value=.7;
   gain.gain.value=.026;
-  src.buffer=buffer; src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+  src.buffer=buffer; src.connect(filter); filter.connect(gain); gain.connect(state.masterGain);
   src.start();
 }
 
@@ -159,7 +188,7 @@ function pulseShuffleAudio(){
 
 function setSoundLabel(){
   const b=document.getElementById('soundBtn');
-  if(b) b.textContent = state.sound ? (state.lang==='en'?'SOUND ON':'声音 ON') : (state.lang==='en'?'SOUND OFF':'声音 OFF');
+  if(b) b.textContent = state.sound ? (state.lang==='en'?'MUSIC ON':'音乐 ON') : (state.lang==='en'?'MUSIC OFF':'音乐 OFF');
 }
 
 function shuffle(arr){
